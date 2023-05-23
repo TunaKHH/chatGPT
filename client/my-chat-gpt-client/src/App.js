@@ -1,0 +1,60 @@
+import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
+
+function App() {
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    socket.on('message', (message) => {
+      // 將ai回覆的訊息 修改到messages最後一筆
+      updateLastMessage(message);
+    });
+  }, []);
+
+  const updateLastMessage = (message) => {
+    setMessages((messages) => {
+      const newMessages = [...messages];
+      newMessages[newMessages.length - 1] = message;
+      return newMessages;
+    });
+  };
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  // 送出使用者訊息
+  const handleSendMessage = (event) => {
+    event.preventDefault(); // 防止表單提交後頁面重新載入
+    // 將使用者輸入的訊息新增到messages
+    setMessages((messages) => [...messages, inputValue]);
+    // 新增空訊息給ai回覆
+    setMessages((messages) => [...messages, "思考中..."]);
+    socket.emit('message', inputValue);
+    setInputValue('');
+  };
+
+  return (
+    <div>
+      <h1>My Chat</h1>
+      <ul>
+        {messages.map((message, index) => (
+          <li key={index}>{message}</li>
+        ))}
+      </ul>
+      {/* form 送出訊息handleSendMessage */}
+      <form onSubmit={handleSendMessage}>
+        <label>
+          輸入訊息:
+          <input type="text" value={inputValue} onChange={handleInputChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    </div>
+  );
+}
+
+export default App;
