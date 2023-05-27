@@ -1,6 +1,10 @@
+
+我想要做成目前chatGPT的網頁樣式
+
+以下是我目前的react程式碼 請根據此調整
+```
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import './App.css';  // 引入CSS樣式檔
 
 const socket = io('http://localhost:3000');
 
@@ -10,6 +14,7 @@ function App() {
 
   useEffect(() => {
     socket.on('message', (message) => {
+      // 將ai回覆的訊息 修改到messages最後一筆
       updateLastMessage(message);
     });
   }, []);
@@ -17,7 +22,7 @@ function App() {
   const updateLastMessage = (message) => {
     setMessages((messages) => {
       const newMessages = [...messages];
-      newMessages[newMessages.length - 1] = { text: message, isBot: true };
+      newMessages[newMessages.length - 1] = message;
       return newMessages;
     });
   };
@@ -26,32 +31,36 @@ function App() {
     setInputValue(event.target.value);
   };
 
+  // 送出使用者訊息
   const handleSendMessage = (event) => {
-    event.preventDefault();
-    setMessages((messages) => [...messages, { text: inputValue, isBot: false }]);
-    setMessages((messages) => [...messages, { text: "思考中...", isBot: true }]);
+    event.preventDefault(); // 防止表單提交後頁面重新載入
+    // 將使用者輸入的訊息新增到messages
+    setMessages((messages) => [...messages, inputValue]);
+    // 新增空訊息給ai回覆
+    setMessages((messages) => [...messages, "思考中..."]);
     socket.emit('message', inputValue);
     setInputValue('');
   };
 
   return (
-    <div className="chat-container">
+    <div>
       <h1>My Chat</h1>
-      <div className="chat-box">
+      <ul>
         {messages.map((message, index) => (
-          <div key={index} className={message.isBot ? "chat-message bot-message" : "chat-message user-message"}>
-            {message.text}
-          </div>
+          <li key={index}>{message}</li>
         ))}
-      </div>
-      <form onSubmit={handleSendMessage} className="chat-input-form">
+      </ul>
+      {/* form 送出訊息handleSendMessage */}
+      <form onSubmit={handleSendMessage}>
         <label>
-          <input type="text" value={inputValue} onChange={handleInputChange} className="chat-input" />
+          輸入訊息:
+          <input type="text" value={inputValue} onChange={handleInputChange} />
         </label>
-        <input type="submit" value="Submit" className="chat-submit" />
+        <input type="submit" value="Submit" />
       </form>
     </div>
   );
 }
 
 export default App;
+```
