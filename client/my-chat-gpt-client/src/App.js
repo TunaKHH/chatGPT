@@ -38,11 +38,15 @@ function App() {
     <div className="chat-container">
       <h1>My Chat</h1>
       <div className="chat-box">
-        {messages.map((message, index) => (
-          <div key={index} className={message.isBot ? "chat-message bot-message" : "chat-message user-message"}>
-            {message.text}
-          </div>
-        ))}
+        {messages.map((message, index) => {
+          const messageClassName = `chat-message ${message.isBot ? "bot-message" : "user-message"}`;
+
+          return (
+            <div key={index} className={messageClassName}>
+              {message.text}
+            </div>
+          );
+        })}
       </div>
       <form onSubmit={handleSendMessage} className="chat-input-form">
         <label>
