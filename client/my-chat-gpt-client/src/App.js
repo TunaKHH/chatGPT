@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './App.css';  // 引入CSS樣式檔
+import Header from './component/header.js' // 引入header.js
 
 const socket = io('http://localhost:3000');
 
@@ -27,6 +28,10 @@ function App() {
   };
 
   const handleSendMessage = (event) => {
+    // 檢查是否為空字串
+    if (inputValue.trim() === '') {
+      return;
+    }
     event.preventDefault();
     setMessages((messages) => [...messages, { text: inputValue, isBot: false }]);
     setMessages((messages) => [...messages, { text: "思考中...", isBot: true }]);
@@ -36,7 +41,7 @@ function App() {
 
   return (
     <div className="chat-container">
-      <h1>My Chat</h1>
+      <Header></Header>
       <div className="chat-box">
         {messages.map((message, index) => {
           const messageClassName = `chat-message ${message.isBot ? "bot-message" : "user-message"}`;
@@ -49,9 +54,8 @@ function App() {
         })}
       </div>
       <form onSubmit={handleSendMessage} className="chat-input-form">
-        <label>
-          <input type="text" value={inputValue} onChange={handleInputChange} className="chat-input" />
-        </label>
+        <textarea type="text" placeholder='Send a message' value={inputValue} onChange={handleInputChange} className="chat-input" />
+
         <input type="submit" value="Submit" className="chat-submit" />
       </form>
     </div>
