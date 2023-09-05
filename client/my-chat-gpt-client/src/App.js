@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import './App.css';  // 引入CSS樣式檔
 import Header from './component/header.js' // 引入header.js
 
-const socket = io('http://localhost:3000');
+const socket = io('https://chatgpt-ws.tunagood.site/');
 
 function App() {
   const [messages, setMessages] = useState([]);
